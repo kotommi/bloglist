@@ -7,12 +7,12 @@ const blogFinder = async (req, res, next) => {
     next()
 }
 
-router.get('/api/blogs', async (req, res) => {
+router.get('/', async (req, res) => {
     const blogs = await Blog.findAll();
     res.json(blogs)
 })
 
-router.post('/api/blogs', async (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
         const blog = await Blog.create(req.body)
         return res.json(blog)
@@ -21,7 +21,7 @@ router.post('/api/blogs', async (req, res, next) => {
     }
 })
 
-router.get('/api/blogs/:id', blogFinder, (req, res) => {
+router.get('/:id', blogFinder, (req, res) => {
     if (req.blog) {
         return res.json(req.blog)
     } else {
@@ -29,7 +29,7 @@ router.get('/api/blogs/:id', blogFinder, (req, res) => {
     }
 })
 
-router.delete('/api/blogs/:id', blogFinder, (req, res) => {
+router.delete('/:id', blogFinder, (req, res) => {
     if (req.blog) {
         req.blog.destroy()
         return res.sendStatus(200)
@@ -38,7 +38,7 @@ router.delete('/api/blogs/:id', blogFinder, (req, res) => {
     }
 })
 
-router.put('/api/blogs/:id', blogFinder, async (req, res, next) => {
+router.put('/:id', blogFinder, async (req, res, next) => {
     if (!req.blog) {
         return res.sendStatus(404)
     }
