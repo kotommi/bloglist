@@ -1,21 +1,10 @@
 const router = require('express').Router()
 const { Blog } = require('../models')
+const { errorHandler } = require('../util/middleware')
 
 const blogFinder = async (req, res, next) => {
     req.blog = await Blog.findByPk(req.params.id)
     next()
-}
-
-const errorHandler = (err, req, res, next) => {
-    if (err.name === 'SequelizeDatabaseError') {
-        return res.status(400).json({ error: 'bad request', message: err.message })
-    }
-    if (err.name === 'SequelizeValidationError') {
-        const messages = []
-        err.errors.forEach(e => messages.push(e.message))
-        return res.status(400).json({ error: 'bad request', messages })
-    }
-    return res.status(400).json({ error: 'bad request', message: err?.message })
 }
 
 router.get('/api/blogs', async (req, res) => {
