@@ -1,0 +1,9 @@
+services:
+  psql:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=asdasd
+    volumes:
+      - ./psql_data/:/var/lib/postgresql/data
