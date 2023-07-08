@@ -10,6 +10,7 @@ const blogFinder = async (req, res, next) => {
     next()
 }
 
+// idea: find the user and append to body
 const userAuther = (req, res, next) => {
     const auth = req.get('authorization')
     if (auth && auth.toLowerCase().startsWith('bearer ')) {
@@ -48,12 +49,9 @@ router.get('/', async (req, res) => {
         include: {
             model: User,
             attributes: ['username']
-
         },
         where,
-        order: [
-            ['likes', 'DESC']
-        ]
+        order: [['likes', 'DESC']]
     });
     res.json(blogs)
 })
