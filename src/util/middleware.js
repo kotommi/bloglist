@@ -12,7 +12,8 @@ const errorHandler = (err, req, res, next) => {
         err.errors.forEach(e => messages.push(e.message))
         return res.status(400).json({ error: 'bad request', messages })
     }
-    return res.status(400).json({ error: 'bad request', message: err?.message, err })
+    const infoToSend = process.env.NODE_ENV === 'production' ? 'unknown error' : err
+    return res.status(400).json({ error: 'bad request', message: err?.message, info: infoToSend })
 }
 
 module.exports = {
