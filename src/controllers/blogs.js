@@ -43,7 +43,13 @@ router.get('/', async (req, res) => {
 
 router.post('/', userAuther, async (req, res, next) => {
   try {
-    const blog = await Blog.create({ ...req.body, userId: req.body.user.id });
+    const blog = await Blog.create({
+      title: req.body.title,
+      url: req.body.url,
+      author: req.body.author,
+      likes: req.body.likes,
+      userId: req.body.user.id,
+    });
     return res.json(blog);
   } catch (error) {
     return next(error);

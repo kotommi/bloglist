@@ -18,6 +18,8 @@ const errorHandler = (err, req, res, _next) => {
     return res.status(400).json({ error: 'bad request', messages });
   }
   const infoToSend = process.env.NODE_ENV === 'production' ? 'unknown error' : err;
+  // eslint-disable-next-line no-console
+  console.log(err);
   return res.status(400).json({ error: 'bad request', message: err?.message, info: infoToSend });
 };
 
@@ -33,11 +35,11 @@ const userAuther = async (req, res, next) => {
       const user = await User.findByPk(decodedToken.id);
       if (user.disabled) throw new Error('This user is disabled');
       const dbToken = await Token.findOne({ where: { userId: user.id } });
-      if (dbToken.token !== auth.substring(7)) {
-        throw new Error('Token integrity error, please login again');
+      if (dbToken?.token !== auth.substring(7)) {
+        throw new Error('Session expired. Please login again');
       }
       req.decodedToken = decodedToken;
-      req.user = user;
+      req.body.user = user;
       return next();
     } catch (error) {
       return next(error);
