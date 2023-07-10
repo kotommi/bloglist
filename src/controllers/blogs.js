@@ -1,27 +1,12 @@
 const router = require('express').Router();
-const jwt = require('jsonwebtoken');
+
 const { Op } = require('sequelize');
 const { Blog, User } = require('../models');
-const { errorHandler } = require('../util/middleware');
-const { JWT_SECRET } = require('../util/config');
+const { errorHandler, userAuther } = require('../util/middleware');
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
   next();
-};
-
-// idea: find the user and append to body
-const userAuther = (req, res, next) => {
-  const auth = req.get('authorization');
-  if (auth && auth.toLowerCase().startsWith('bearer ')) {
-    try {
-      req.decodedToken = jwt.verify(auth.substring(7), JWT_SECRET);
-      return next();
-    } catch (error) {
-      return next(error);
-    }
-  }
-  return res.status(401).json({ error: 'login required' });
 };
 
 router.get('/', async (req, res) => {

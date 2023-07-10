@@ -1,4 +1,7 @@
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('./config');
+
 const errorHandler = (err, req, res, _next) => {
   if (err.name === 'SequelizeDatabaseError') {
     return res.status(400).json({ error: 'bad request', message: err.message });
@@ -17,6 +20,20 @@ const errorHandler = (err, req, res, _next) => {
   return res.status(400).json({ error: 'bad request', message: err?.message, info: infoToSend });
 };
 
+// idea: find the user and append to body
+const userAuther = (req, res, next) => {
+  const auth = req.get('authorization');
+  if (auth && auth.toLowerCase().startsWith('bearer ')) {
+    try {
+      req.decodedToken = jwt.verify(auth.substring(7), JWT_SECRET);
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+  return res.status(401).json({ error: 'login required' });
+};
+
 module.exports = {
-  errorHandler,
+  errorHandler, userAuther,
 };
