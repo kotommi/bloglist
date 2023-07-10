@@ -43,8 +43,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', userAuther, async (req, res, next) => {
   try {
-    const user = await User.findByPk(req.decodedToken.id);
-    const blog = await Blog.create({ ...req.body, userId: user.id });
+    const blog = await Blog.create({ ...req.body, userId: req.body.user.id });
     return res.json(blog);
   } catch (error) {
     return next(error);

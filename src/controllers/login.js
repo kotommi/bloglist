@@ -2,7 +2,7 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET } = require('../util/config');
-const { User } = require('../models');
+const { User, Token } = require('../models');
 
 router.post('/', async (req, res) => {
   const { body } = req;
@@ -19,8 +19,15 @@ router.post('/', async (req, res) => {
     username: user.username,
     id: user.id,
   };
-  const token = jwt.sign(userForToken, JWT_SECRET);
+  const token = jwt.sign(userForToken, JWT_SECRET, { expiresIn: '1h' });
 
+  const dbToken = await Token.findOne({ where: { userId: user.id } });
+  if (!dbToken) {
+    await Token.create({ token, userId: user.id });
+  } else {
+    dbToken.token = token;
+    await dbToken.save();
+  }
   return res.status(200).send({ token, username: user.username, name: user.name });
 });
 

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Readinglist, User } = require('../models');
+const { Readinglist } = require('../models');
 const { errorHandler, userAuther } = require('../util/middleware');
 
 router.post('/', async (req, res, next) => {
@@ -18,12 +18,7 @@ router.post('/:id', userAuther, async (req, res, next) => {
   if (!readinglist) {
     return req.status(404).json({ error: 'readinglist not found' });
   }
-  let user;
-  try {
-    user = await User.findByPk(req.decodedToken.id);
-  } catch (error) {
-    return next(error);
-  }
+  const user = { ...req.body.user };
   if (user.id !== readinglist.userId) {
     return res.status(403).json({ error: 'wrong user' });
   }
@@ -34,12 +29,6 @@ router.post('/:id', userAuther, async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
-});
-
-// debug route
-router.get('/', async (req, res) => {
-  const lists = await Readinglist.findAll({});
-  return res.json(lists);
 });
 
 router.use(errorHandler);
