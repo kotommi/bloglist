@@ -20,6 +20,15 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
+  const where = {};
+  const queryRead = req.query.read;
+  if (queryRead) {
+    // Boolean constuctor isn't useful here
+    let bool;
+    if (queryRead === 'true') bool = true;
+    if (queryRead === 'false') bool = false;
+    where.read = bool;
+  }
   const user = await User.findByPk(req.params.id, {
     include: [
       {
@@ -36,6 +45,7 @@ router.get('/:id', async (req, res) => {
         },
         through: {
           attributes: ['id', 'read'],
+          where,
         },
       },
     ],
